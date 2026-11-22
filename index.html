@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dphone</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;font-family:Arial,sans-serif}
+  body{background:#111;color:#fff;min-height:100vh}
+  .screen{display:none;padding:24px;max-width:420px;margin:0 auto;min-height:100vh;flex-direction:column;justify-content:center}
+  .screen.active{display:flex}
+  .logo{font-size:48px;font-weight:900;text-align:center;letter-spacing:3px}
+  .logo span{color:#00e676}
+  .sub{text-align:center;color:#ff5252;margin:10px 0 20px;font-size:18px}
+  .card{background:#1e1e1e;border-radius:16px;padding:20px;margin:12px 0}
+  .row{display:flex;justify-content:space-between;margin:8px 0;color:#ccc}
+  .row b{color:#fff}
+  input{width:100%;padding:14px;border-radius:10px;border:1px solid #333;background:#222;color:#fff;font-size:18px;text-align:center;margin:10px 0;outline:none}
+  button{width:100%;padding:15px;border:none;border-radius:10px;font-size:17px;font-weight:bold;cursor:pointer;margin-top:10px}
+  .btn-green{background:#00e676;color:#000}
+  .btn-red{background:#ff5252;color:#fff}
+  .btn-grey{background:#333;color:#fff}
+  .btn-mpesa{background:#4CAF50;color:#fff}
+  .small{text-align:center;color:#999;font-size:13px;margin-top:14px;line-height:1.5}
+  .paid-badge{background:#00e676;color:#000;padding:6px 12px;border-radius:20px;font-weight:bold;font-size:13px;display:inline-block}
+  .unpaid-badge{background:#ff5252;color:#fff;padding:6px 12px;border-radius:20px;font-weight:bold;font-size:13px;display:inline-block}
+  .topbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+  .app-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-top:10px}
+  .app{background:#1e1e1e;border-radius:14px;padding:16px 5px;text-align:center;font-size:13px}
+  .app div{font-size:26px;margin-bottom:6px}
+  .pay-method{display:flex;align-items:center;gap:12px;background:#222;border:2px solid #00e676;border-radius:12px;padding:12px;margin:10px 0;text-align:left}
+  .pay-method .icon{font-size:30px}
+  .copy-btn{width:auto;padding:8px 14px;font-size:13px;background:#00e676;color:#000;border-radius:8px;margin:0}
+</style>
+</head>
+<body>
+
+<!-- ============ LOCK SCREEN ============ -->
+<div id="lockScreen" class="screen active">
+  <div class="logo">D<span>phone</span></div>
+  <div class="sub">Phone Locked - Payment Due</div>
+
+  <div class="card">
+    <div class="row"><span>Customer:</span><b id="custName">John Kamau</b></div>
+    <div class="row"><span>Phone:</span><b>Tecno Spark 10</b></div>
+    <div class="row"><span>Daily:</span><b id="dailyAmt">Ksh 150</b></div>
+    <div class="row"><span>Status:</span><span id="lockStatus" class="unpaid-badge">NOT PAID</span></div>
+    <div class="row"><span>Days Left:</span><b id="daysLeft">58 days</b></div>
+  </div>
+
+  <!-- PAYMENT METHOD ADDED HERE -->
+  <div class="card">
+    <div style="font-size:16px;font-weight:bold;margin-bottom:8px">💳 Payment Method</div>
+    
+    <div class="pay-method">
+      <div class="icon">🟢</div>
+      <div style="flex:1">
+        <div style="font-weight:bold">M-PESA - Send Money</div>
+        <div style="font-size:20px;font-weight:900;letter-spacing:1px">0741911883</div>
+        <div style="font-size:12px;color:#aaa">Name: DPHONE / Vince</div>
+      </div>
+      <button class="copy-btn" onclick="copyNumber()">Copy</button>
+    </div>
+
+    <div style="font-size:13px;color:#aaa;line-height:1.6">
+      1. Go to M-PESA > Send Money<br>
+      2. Enter <b style="color:#fff">0741911883</b><br>
+      3. Amount: <b style="color:#fff">Ksh 150</b><br>
+      4. Enter M-PESA PIN, you will get code via SMS
+    </div>
+
+    <button class="btn-mpesa" onclick="payWithMpesa()">PAY WITH M-PESA - Ksh 150</button>
+    <div id="payStatus" style="text-align:center;font-size:13px;color:#00e676;margin-top:8px"></div>
+  </div>
+
+  <input id="unlockCode" type="number" placeholder="Enter Unlock Code - Test: 1234">
+  <button class="btn-green" onclick="tryUnlock()">UNLOCK PHONE</button>
+  <button class="btn-grey" onclick="showScreen('adminScreen')">Admin Login (For You)</button>
+
+  <p class="small">This phone is financed by Dphone.<br>If you don't pay for 3 days, phone will stay locked.<br>Call 0741911883 for help.</p>
+</div>
+
+<!-- ============ UNLOCKED / HOME ============ -->
+<div id="homeScreen" class="screen">
+  <div class="topbar">
+    <div class="logo" style="font-size:28px">D<span>phone</span></div>
+    <span class="paid-badge">PAID TODAY ✓</span>
+  </div>
+  <div style="font-size:22px;font-weight:bold;margin:10px 0">Hello, <span id="homeName">John</span> 👋</div>
+  <p style="color:#aaa;font-size:14px">Your phone is unlocked for today. Pay tomorrow to stay unlocked.</p>
+  <div class="card">
+    <div class="row"><span>Today's Payment:</span><b style="color:#00e676">PAID</b></div>
+    <div class="row"><span>Next Payment:</span><b>Tomorrow - Ksh 150</b></div>
+    <div class="row"><span>Days Remaining:</span><b id="homeDays">58 days</b></div>
+  </div>
+  <div class="card" style="text-align:center">
+    <div style="font-size:14px;color:#aaa">Pay Tomorrow via M-PESA</div>
+    <div style="font-size:28px;font-weight:900;margin:6px 0">0741911883</div>
+    <button class="btn-mpesa" onclick="payWithMpesa()">PAY Ksh 150 NOW</button>
+  </div>
+  <div class="app-grid">
+    <div class="app"><div>📞</div>Calls</div>
+    <div class="app"><div>💬</div>Messages</div>
+    <div class="app"><div>📷</div>Camera</div>
+    <div class="app"><div>💚</div>WhatsApp</div>
+    <div class="app"><div>🎵</div>Music</div>
+    <div class="app"><div>🌐</div>Browser</div>
+  </div>
+  <button class="btn-red" onclick="lockAgain()">LOCK AGAIN (Test)</button>
+  <button class="btn-grey" onclick="showScreen('adminScreen')">Admin Settings</button>
+</div>
+
+<!-- ============ ADMIN SCREEN ============ -->
+<div id="adminScreen" class="screen">
+  <div class="logo" style="font-size:32px">D<span>phone</span> Admin</div>
+  <p class="small">Only for shop owner.</p>
+  <div class="card">
+    <label style="font-size:13px;color:#aaa">Customer Name</label>
+    <input id="adminName" value="John Kamau" style="text-align:left">
+    <label style="font-size
